@@ -1,5 +1,5 @@
 // Define your quiz questions and answers here
-
+let highScores = [];
 const questions = [
     {
       question: "What is JavaScript?",
@@ -71,10 +71,19 @@ const questions = [
       ],
       correctAnswer: "Cascading Style Sheets"
     },
-    // Add more questions as needed
+
   ];
   
+  // Function to shuffle the array randomly
+function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+  }
   
+  // Shuffle the array of questions
+  shuffleArray(questions);
 
   
   
@@ -124,5 +133,6 @@ const questions = [
       resultContainer.classList.remove('hide');
       // Display final score and allow user to submit their score
     }
+
   }
   
