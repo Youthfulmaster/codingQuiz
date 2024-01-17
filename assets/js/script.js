@@ -85,14 +85,17 @@ function shuffleArray(array) {
   // Shuffle the array of questions
   shuffleArray(questions);
 
-  
-  
+
   const startBtn = document.getElementById('start-btn');
   const questionContainer = document.getElementById('question-container');
   const resultContainer = document.getElementById('result-container');
-  const submitScoreBtn = document.getElementById('submit-score');
+  const submitScoreBtn = document.getElementById('submitInitialsBtn');
   let currentQuestionIndex = 0;
-  
+  let time = 60; // Initial time in seconds
+
+  let correctAnswersCount = 0;
+  let timerInterval;
+
   // Event listener for the start button
   startBtn.addEventListener('click', startQuiz);
   
@@ -100,6 +103,8 @@ function shuffleArray(array) {
     startBtn.classList.add('hide');
     questionContainer.classList.remove('hide');
     showQuestion();
+    // Start the timer interval
+    timerInterval = setInterval(updateTimer, 1000);
   }
   
   function showQuestion() {
@@ -113,26 +118,119 @@ function shuffleArray(array) {
     });
   }
   
+  // Function to update the timer display
+function updateTimer() {
+    const timerElement = document.getElementById('timer');
+    timerElement.innerText = `Time: ${time}s`;
+  }
+
+
+
   function checkAnswer(selectedAnswer) {
     const currentQuestion = questions[currentQuestionIndex];
     if (selectedAnswer === currentQuestion.correctAnswer) {
       // Correct answer logic
-      // You can update the UI, increment score, etc.
+      correctAnswersCount++;
     } else {
       // Incorrect answer logic
-      // You can update the UI, decrement time, etc.
+      time -= 10; // get rid of 10 seconds for each incorrect answer
     }
-  
     currentQuestionIndex++;
-  
-    if (currentQuestionIndex < questions.length) {
-      showQuestion();
-    } else {
-      // Quiz is over
-      questionContainer.classList.add('hide');
-      resultContainer.classList.remove('hide');
-      // Display final score and allow user to submit their score
-    }
 
+     if (currentQuestionIndex < questions.length) {
+    showQuestion();
+  } else {
+    // Quiz is over
+    calculateScore(); // Call the function to calculate the score
+    questionContainer.classList.add('hide');
+    resultContainer.classList.remove('hide');
+    // Display final score and allow the user to submit their score
   }
+    }
+    
+
+    function updateTimer() {
+        document.getElementById('timer').innerText = `Time: ${time}s`;
+      
+        if (time <= 0) {
+          // Quiz time is up
+          clearInterval(timerInterval); // Stop the timer
+          calculateScore(); // Call the function to calculate the score
+          questionContainer.classList.add('hide');
+          resultContainer.classList.remove('hide');
+          // Display final score and allow the user to submit their score
+        } else {
+          time--;
+        }
+      }
+
+
+    
+      function calculateScore() {
+        // Define your scoring logic here
+        const totalQuestions = questions.length;
+        const userScore = (correctAnswersCount / totalQuestions) * 100; // For example, calculate as a percentage
+        console.log("User Score:", userScore);
+        return userScore;
+      }
+  
+  
+  // Event listener for submitting score
+  submitScoreBtn.addEventListener('click', openSubmitModal);
+  
+  function openSubmitModal() {
+    // Bootstrap modal for submitting initials
+    const initialsModal = `
+      <div class="modal fade" id="initialsModal" tabindex="-1" role="dialog" aria-labelledby="initialsModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="initialsModalLabel">Submit Initials</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <label for="initials">Enter your initials:</label>
+              <input type="text" id="initials" class="form-control" placeholder="ABC">
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              <button type="button" class="btn btn-primary" id="submitInitialsBtn">Submit</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  
+    // Append the modal HTML to the body
+    document.body.insertAdjacentHTML('beforeend', initialsModal);
+  
+    // Show the modal
+    $('#initialsModal').modal('show');
+  }
+  
+
+  
+// Function to handle the submission of initials from the modal
+function submitInitials() {
+    const initials = document.getElementById('initials').value;
+  
+    // Close the modal
+    $('#initialsModal').modal('hide');
+  
+    // Continue with your scoring logic using the obtained initials
+    const score = calculateScore();
+  
+    // Add the score to the high scores array
+    highScores.push({ initials, score });
+  
+    highScores.sort((a, b) => b.score - a.score);
+  
+    // Display or store the high scores as needed
+    console.log("High Scores:", highScores);
+  }
+  
+  //  event listener for the submitInitialsBtn
+  document.getElementById('submitInitialsBtn').addEventListener('click', submitInitials);
   

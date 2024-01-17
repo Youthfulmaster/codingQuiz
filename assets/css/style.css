@@ -20,4 +20,10 @@ body {
   .hide {
     display: none;
   }
-  
+  #timer {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    font-size: 20px;
+    color: #333; /* Adjust the color as needed */
+  }  
