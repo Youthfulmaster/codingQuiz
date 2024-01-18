@@ -74,16 +74,16 @@ const questions = [
 
   ];
   
-  // Function to shuffle the array randomly
-function shuffleArray(array) {
-    for (let i = array.length - 1; i > 0; i--) {
+  function shuffleQuestions() {
+    for (let i = questions.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
-      [array[i], array[j]] = [array[j], array[i]];
+      [questions[i], questions[j]] = [questions[j], questions[i]];
     }
   }
   
-  // Shuffle the array of questions
-  shuffleArray(questions);
+  // Call the shuffleQuestions function before starting the quiz
+  shuffleQuestions();
+  
 
 
   const startBtn = document.getElementById('start-btn');
@@ -112,11 +112,19 @@ function shuffleArray(array) {
     document.getElementById('question').innerText = currentQuestion.question;
   
     const answerButtons = document.querySelectorAll('.answer-btn');
+  
+    // Remove previous event listeners
+    answerButtons.forEach(btn => {
+      btn.removeEventListener('click', () => checkAnswer(btn.innerText));
+    });
+  
+    // Add new event listeners
     answerButtons.forEach((btn, index) => {
       btn.innerText = currentQuestion.answers[index];
       btn.addEventListener('click', () => checkAnswer(btn.innerText));
     });
   }
+  
   
   // Function to update the timer display
 function updateTimer() {
@@ -127,26 +135,34 @@ function updateTimer() {
 
 
   function checkAnswer(selectedAnswer) {
+    console.log("Selected Answer:", selectedAnswer);
     const currentQuestion = questions[currentQuestionIndex];
+    console.log("Current Question:", currentQuestion);
     if (selectedAnswer === currentQuestion.correctAnswer) {
       // Correct answer logic
       correctAnswersCount++;
     } else {
       // Incorrect answer logic
-      time -= 10; // get rid of 10 seconds for each incorrect answer
+      time -= 10; // Deduct 10 seconds for incorrect answers
     }
-    currentQuestionIndex++;
-
-     if (currentQuestionIndex < questions.length) {
-    showQuestion();
-  } else {
-    // Quiz is over
-    calculateScore(); // Call the function to calculate the score
-    questionContainer.classList.add('hide');
-    resultContainer.classList.remove('hide');
-    // Display final score and allow the user to submit their score
+  
+    if (currentQuestionIndex < questions.length - 1) {
+      // If there are more questions, increment the index and show the next question
+      currentQuestionIndex++;
+      showQuestion();
+    } else {
+      // If it's the last question, end the quiz
+      clearInterval(timerInterval); // Stop the timer
+      calculateScore(); // Calculate and display the score
+      questionContainer.classList.add('hide');
+      resultContainer.classList.remove('hide');
+    }
   }
-    }
+  
+  
+  
+  
+
     
 
     function updateTimer() {
@@ -207,23 +223,6 @@ function updateTimer() {
   
     // Show the modal
     $('#initialsModal').modal('show');
-  }
-  
-
-  function submitInitials() {
-    console.log("submitInitials() function called");
-    const initials = document.getElementById('initials').value;
-    // Close the modal
-    $('#initialsModal').modal('hide');
-  
-    // Continue with your scoring logic using the obtained initials
-    const score = calculateScore();
-    
-    // Display or store the high scores as needed
-    console.log("High Scores:", highScores);
-  
-    // Display the score on the resultContainer
-    document.getElementById('score').innerText = `Your Score: ${score}%`;
   }
   
 // Function to handle the submission of initials from the modal
