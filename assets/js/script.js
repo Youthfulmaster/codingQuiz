@@ -167,12 +167,11 @@ function updateTimer() {
 
     
       function calculateScore() {
-        // Define your scoring logic here
-        const totalQuestions = questions.length;
-        const userScore = (correctAnswersCount / totalQuestions) * 100; // For example, calculate as a percentage
+        const userScore = correctAnswersCount; // Calculate score based on the count of correct answers
         console.log("User Score:", userScore);
         return userScore;
       }
+      
   
   
   // Event listener for submitting score
@@ -211,25 +210,49 @@ function updateTimer() {
   }
   
 
-  
-// Function to handle the submission of initials from the modal
-function submitInitials() {
+  function submitInitials() {
+    console.log("submitInitials() function called");
     const initials = document.getElementById('initials').value;
-  
     // Close the modal
     $('#initialsModal').modal('hide');
   
     // Continue with your scoring logic using the obtained initials
     const score = calculateScore();
-  
-    // Add the score to the high scores array
-    highScores.push({ initials, score });
-  
-    highScores.sort((a, b) => b.score - a.score);
-  
+    
     // Display or store the high scores as needed
     console.log("High Scores:", highScores);
+  
+    // Display the score on the resultContainer
+    document.getElementById('score').innerText = `Your Score: ${score}%`;
   }
+  
+// Function to handle the submission of initials from the modal
+function submitInitials() {
+  const initials = document.getElementById('initials').value;
+
+  // Close the modal
+  $('#initialsModal').modal('hide');
+
+  // Continue with your scoring logic using the obtained initials
+  const score = calculateScore();
+
+  // Add the score to the high scores array
+  highScores.push({ initials, score });
+
+  highScores.sort((a, b) => b.score - a.score);
+
+  // Display or store the high scores as needed
+  console.log("High Scores:", highScores);
+
+  // Display the score on the resultContainer
+  document.getElementById('score').innerText = `Your Score: ${score} out of ${questions.length}`;
+}
+document.addEventListener('click', function(event) {
+  if (event.target && event.target.id === 'submitInitialsBtn') {
+    // Call submitInitials function here
+    submitInitials();
+  }
+});
   
   //  event listener for the submitInitialsBtn
   document.getElementById('submitInitialsBtn').addEventListener('click', submitInitials);
